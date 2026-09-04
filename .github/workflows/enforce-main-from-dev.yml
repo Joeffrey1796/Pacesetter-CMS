@@ -1,0 +1,21 @@
+name: Enforce main only from dev
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PR source is dev
+        run: |
+          echo "Base branch: ${{ github.event.pull_request.base.ref }}"
+          echo "Head branch: ${{ github.event.pull_request.head.ref }}"
+          if [ "${{ github.event.pull_request.head.ref }}" != "dev" ]; then
+            echo "PRs into 'main' are only allowed from 'dev'. This PR is from '${{ github.event.pull_request.head.ref }}'."
+            exit 1
+          fi
+          echo "PR source is dev — allowed."
